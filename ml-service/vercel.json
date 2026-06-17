@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "dest": "api/app.py"
+    }
+  ]
+}

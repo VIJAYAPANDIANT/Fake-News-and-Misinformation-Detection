@@ -4,16 +4,24 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 
+import tempfile
+
+# Configure writable directory for NLTK on serverless read-only filesystems
+nltk_dir = os.path.join(tempfile.gettempdir(), 'nltk_data')
+os.makedirs(nltk_dir, exist_ok=True)
+if nltk_dir not in nltk.data.path:
+    nltk.data.path.append(nltk_dir)
+
 # Ensure necessary NLTK datasets are downloaded
 try:
     nltk.data.find('corpora/stopwords')
 except LookupError:
-    nltk.download('stopwords', quiet=True)
+    nltk.download('stopwords', download_dir=nltk_dir, quiet=True)
 
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
-    nltk.download('punkt', quiet=True)
+    nltk.download('punkt', download_dir=nltk_dir, quiet=True)
 
 # Define custom list fallback if download fails or is restricted
 try:

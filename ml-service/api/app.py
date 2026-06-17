@@ -32,13 +32,13 @@ class PredictionResponse(BaseModel):
 @app.on_event("startup")
 def load_model_artifacts():
     global model, vectorizer
-    model_path = "ml-service/model/fake_news_model.pkl"
-    vectorizer_path = "ml-service/model/vectorizer.pkl"
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    model_path = os.path.abspath(os.path.join(current_dir, '..', 'model', 'fake_news_model.pkl'))
+    vectorizer_path = os.path.abspath(os.path.join(current_dir, '..', 'model', 'vectorizer.pkl'))
     
     if not os.path.exists(model_path) or not os.path.exists(vectorizer_path):
         raise RuntimeError(
-            f"Model artifacts not found. Please train the model first by running "
-            f"`python ml-service/training/train_model.py`."
+            f"Model artifacts not found. Checked: \n- {model_path}\n- {vectorizer_path}"
         )
         
     print(f"Loading model from {model_path}...")
