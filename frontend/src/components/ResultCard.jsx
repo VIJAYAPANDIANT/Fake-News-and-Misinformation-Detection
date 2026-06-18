@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../services/api';
 
 const ResultCard = ({ result, onClear }) => {
   const { id, title, prediction, confidenceScore } = result;
@@ -18,12 +18,10 @@ const ResultCard = ({ result, onClear }) => {
     setSubmittingFeedback(true);
     setFeedbackError('');
     try {
-      const token = localStorage.getItem('token');
-      // POST feedback to Express backend
-      await axios.post(
-        'http://localhost:5000/api/news/feedback', 
-        { predictionId: id, feedback },
-        { headers: { Authorization: `Bearer ${token}` } }
+      // POST feedback to Express backend using central API utility
+      await API.post(
+        '/news/feedback', 
+        { predictionId: id, feedback }
       );
       setFeedbackSubmitted(true);
     } catch (err) {

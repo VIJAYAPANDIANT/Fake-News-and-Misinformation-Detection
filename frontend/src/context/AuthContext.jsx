@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   // Configure global API base URL pointing to Node.js backend
-  const API_URL = 'http://localhost:5000/api';
+  const API_URL = `${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api`;
 
   useEffect(() => {
     const loadUser = async () => {
