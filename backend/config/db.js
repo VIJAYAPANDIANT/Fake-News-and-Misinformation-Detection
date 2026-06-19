@@ -1,5 +1,8 @@
 const mongoose = require('mongoose');
 
+// Default to mock database to prevent race conditions on serverless startup
+global.useMockDb = true;
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
