@@ -41,4 +41,6 @@ const predictionSchema = new mongoose.Schema(
 // Compound index for user history lookup sorted by creation date
 predictionSchema.index({ userId: 1, createdAt: -1 });
 
-module.exports = mongoose.model('Prediction', predictionSchema);
+const Prediction = mongoose.model('Prediction', predictionSchema);
+const { createModelProxy, MockPrediction } = require('./mockDb');
+module.exports = createModelProxy(Prediction, MockPrediction);

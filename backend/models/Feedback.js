@@ -30,4 +30,6 @@ const feedbackSchema = new mongoose.Schema(
 // Compound index for user checking feedback on specific predictions
 feedbackSchema.index({ userId: 1, predictionId: 1 });
 
-module.exports = mongoose.model('Feedback', feedbackSchema);
+const Feedback = mongoose.model('Feedback', feedbackSchema);
+const { createModelProxy, MockFeedback } = require('./mockDb');
+module.exports = createModelProxy(Feedback, MockFeedback);
