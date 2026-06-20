@@ -1,6 +1,5 @@
 # 📰 Fake News & Misinformation Detection System
 
-
 A complete, production-ready full-stack application designed to analyze and detect fake news and misinformation. The system leverages **Natural Language Processing (NLP)** and **Machine Learning (Logistic Regression)** to classify articles, providing user authentication, history tracking, feedback mechanisms, and an administrative dashboard.
 
 ---
