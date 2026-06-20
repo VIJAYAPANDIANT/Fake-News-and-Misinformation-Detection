@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 // Default to false and attempt to connect to MongoDB Atlas
 global.useMockDb = false;
 
+global.lastDbError = null;
+
 const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
@@ -12,10 +14,12 @@ const connectDB = async () => {
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
     global.useMockDb = false;
+    global.lastDbError = null;
   } catch (error) {
     console.error(`Error connecting to MongoDB: ${error.message}`);
     console.log('--- FALLING BACK TO IN-MEMORY MOCK DATABASE ---');
     global.useMockDb = true;
+    global.lastDbError = error.message;
     
     // In Vercel serverless environments we must not call process.exit(1)
     if (!process.env.VERCEL) {

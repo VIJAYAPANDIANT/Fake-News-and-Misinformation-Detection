@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 const User = require('../models/User');
 
 // Helper to generate JWT Token
@@ -99,4 +100,17 @@ exports.getMe = async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+};
+
+// @desc    Get Database Connection Status (diagnostic)
+// @route   GET /api/auth/db-status
+// @access  Public
+exports.getDbStatus = (req, res) => {
+  res.json({
+    readyState: mongoose.connection.readyState, // 0 = disconnected, 1 = connected, 2 = connecting, 3 = disconnecting
+    useMockDb: global.useMockDb,
+    lastDbError: global.lastDbError,
+    hasMongoUri: !!process.env.MONGO_URI,
+    mongoUriPrefix: process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 30) : null
+  });
 };

@@ -8,7 +8,7 @@ const axios = require('axios');
  */
 const getMLPrediction = async (title, text) => {
   try {
-    const mlUrl = process.env.ML_SERVICE_URL || 'http://127.0.0.1:8000/predict';
+    const mlUrl = process.env.ML_SERVICE_URL || 'https://fake-news-and-misinformation-detect-swart.vercel.app/predict';
     
     console.log(`Sending predict request to ML service: ${mlUrl}`);
     const response = await axios.post(mlUrl, {
