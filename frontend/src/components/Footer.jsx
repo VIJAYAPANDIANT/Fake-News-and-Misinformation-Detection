@@ -122,8 +122,20 @@ const Footer = () => {
                   </div>
                 ) : (
                   <form onSubmit={handleSupportSubmit} className="space-y-4">
+                    <div className="bg-slate-50 dark:bg-slate-950 p-4 rounded-xl border border-slate-150 dark:border-slate-850 text-xs space-y-1 text-slate-650 dark:text-slate-350">
+                      <p className="font-bold text-slate-850 dark:text-white uppercase tracking-wider text-[10px]">
+                        Direct Support Administrator
+                      </p>
+                      <p className="text-sm font-semibold text-slate-850 dark:text-slate-100">
+                        Vijayapandian T
+                      </p>
+                      <p>
+                        Email: <a href="mailto:vijayapandian112007@gmail.com" className="text-blue-500 hover:underline">vijayapandian112007@gmail.com</a>
+                      </p>
+                    </div>
+
                     <p className="text-sm text-slate-500 dark:text-slate-450">
-                      Having issues or found a bug? Let us know below:
+                      Or submit your request directly to our support log:
                     </p>
                     <div>
                       <label htmlFor="supportMessage" className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
