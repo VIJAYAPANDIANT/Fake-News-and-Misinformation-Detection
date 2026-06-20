@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 body {
-  background-color: #f8fafc; /* bg-slate-50 equivalent */
-  color: #0f172a; /* text-slate-900 equivalent */
+  background-color: #020617; /* bg-slate-950 equivalent */
+  color: #f8fafc; /* text-slate-50 equivalent */
   transition-property: color, background-color;
   transition-duration: 200ms;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -11,7 +11,7 @@ body {
 
 /* Dark class theme override */
 .dark body {
-  background-color: #020617; /* bg-slate-955 / slate-950 */
+  background-color: #020617; /* bg-slate-950 */
   color: #f8fafc; /* text-slate-50 */
 }
 
