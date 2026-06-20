@@ -1,19 +1,158 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 const Footer = () => {
+  const [activeModal, setActiveModal] = useState(null); // 'privacy', 'terms', 'support', or null
+  const [supportSubmitted, setSupportSubmitted] = useState(false);
+  const [supportText, setSupportText] = useState('');
+
+  const handleSupportSubmit = (e) => {
+    e.preventDefault();
+    if (!supportText.trim()) return;
+    setSupportSubmitted(true);
+    setTimeout(() => {
+      setSupportSubmitted(false);
+      setSupportText('');
+      setActiveModal(null);
+    }, 2000);
+  };
+
   return (
-    <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-200 py-6 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <div className="text-sm text-slate-500 dark:text-slate-400">
-          &copy; {new Date().getFullYear()} Veritas.AI. All rights reserved.
+    <>
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 transition-colors duration-200 py-6 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="text-sm text-slate-500 dark:text-slate-400">
+            &copy; {new Date().getFullYear()} Veritas.AI. All rights reserved.
+          </div>
+          <div className="flex space-x-6 text-sm text-slate-500 dark:text-slate-400">
+            <span 
+              onClick={() => setActiveModal('privacy')}
+              className="hover:text-blue-650 dark:hover:text-blue-400 cursor-pointer transition"
+            >
+              Privacy Policy
+            </span>
+            <span 
+              onClick={() => setActiveModal('terms')}
+              className="hover:text-blue-650 dark:hover:text-blue-400 cursor-pointer transition"
+            >
+              Terms of Service
+            </span>
+            <span 
+              onClick={() => setActiveModal('support')}
+              className="hover:text-blue-650 dark:hover:text-blue-400 cursor-pointer transition"
+            >
+              Contact Support
+            </span>
+          </div>
         </div>
-        <div className="flex space-x-6 text-sm text-slate-500 dark:text-slate-400">
-          <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition">Privacy Policy</span>
-          <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition">Terms of Service</span>
-          <span className="hover:text-blue-600 dark:hover:text-blue-400 cursor-pointer transition">Contact Support</span>
+      </footer>
+
+      {/* Modal Overlay */}
+      {activeModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-250 dark:border-slate-800 w-full max-w-lg rounded-2xl shadow-2xl p-6 relative max-h-[85vh] overflow-y-auto space-y-4">
+            {/* Close Button */}
+            <button 
+              onClick={() => setActiveModal(null)}
+              className="absolute top-4 right-4 text-slate-450 hover:text-slate-700 dark:hover:text-slate-200 transition"
+            >
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Privacy Policy Modal */}
+            {activeModal === 'privacy' && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-black text-slate-850 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">
+                  Privacy Policy
+                </h3>
+                <div className="text-sm text-slate-650 dark:text-slate-350 space-y-3 leading-relaxed">
+                  <p className="font-bold text-slate-850 dark:text-white">Last updated: June 2026</p>
+                  <p>
+                    Veritas.AI is committed to protecting your privacy. We process news articles and headlines solely to calculate credibility and clickbait risk levels using local machine learning algorithms.
+                  </p>
+                  <h4 className="font-bold text-slate-850 dark:text-white">Data Storage & Usage</h4>
+                  <p>
+                    We store your account credentials and prediction scan history in our secure databases. Submissions are only saved with your profile to allow review of past runs and are never sold or shared with advertisers.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Terms of Service Modal */}
+            {activeModal === 'terms' && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-black text-slate-850 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">
+                  Terms of Service
+                </h3>
+                <div className="text-sm text-slate-650 dark:text-slate-350 space-y-3 leading-relaxed">
+                  <p className="font-bold text-slate-850 dark:text-white">Last updated: June 2026</p>
+                  <p>
+                    Welcome to Veritas.AI. By using our platform, you agree to these Terms of Service.
+                  </p>
+                  <h4 className="font-bold text-slate-850 dark:text-white">Classification Accuracy Disclaimer</h4>
+                  <p>
+                    Our credibility score predictions are generated by AI machine learning models based on news content indicators. They are probabilistic estimations and should not be considered definitive legal or factual verdicts on any article.
+                  </p>
+                  <h4 className="font-bold text-slate-850 dark:text-white">Usage Restrictions</h4>
+                  <p>
+                    You agree not to upload malicious scripts, spam content, or use our APIs to scrape news content systematically in violation of source terms.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {/* Contact Support Modal */}
+            {activeModal === 'support' && (
+              <div className="space-y-4">
+                <h3 className="text-xl font-black text-slate-850 dark:text-white border-b border-slate-100 dark:border-slate-800 pb-2">
+                  Contact Support
+                </h3>
+                {supportSubmitted ? (
+                  <div className="text-center py-8 space-y-2">
+                    <div className="w-12 h-12 bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto">
+                      <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <h4 className="text-lg font-bold text-slate-850 dark:text-white">Message Sent!</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Our support team will get back to you shortly.
+                    </p>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSupportSubmit} className="space-y-4">
+                    <p className="text-sm text-slate-500 dark:text-slate-450">
+                      Having issues or found a bug? Let us know below:
+                    </p>
+                    <div>
+                      <label htmlFor="supportMessage" className="block text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+                        How can we help?
+                      </label>
+                      <textarea
+                        id="supportMessage"
+                        rows={4}
+                        required
+                        value={supportText}
+                        onChange={(e) => setSupportText(e.target.value)}
+                        placeholder="Describe your issue or query..."
+                        className="w-full px-4 py-3 text-sm rounded-xl border border-slate-250 dark:border-slate-750 bg-slate-50 dark:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100 transition"
+                      />
+                    </div>
+                    <button
+                      type="submit"
+                      className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition duration-150 shadow-sm"
+                    >
+                      Send Message
+                    </button>
+                  </form>
+                )}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
-    </footer>
+      )}
+    </>
   );
 };
 
