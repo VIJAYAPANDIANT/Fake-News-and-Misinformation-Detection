@@ -44,27 +44,45 @@ class MockUser {
     return this;
   }
 
-  static async findOne(query) {
-    let email = query.email;
-    if (email && typeof email === 'object' && email.email) {
-      email = email.email;
-    }
-    const user = global.mockDb.users.find(u => u.email === (email || '').toLowerCase());
-    if (!user) return null;
+  static findOne(query) {
+    const execute = () => {
+      let email = query.email;
+      if (email && typeof email === 'object' && email.email) {
+        email = email.email;
+      }
+      const user = global.mockDb.users.find(u => u.email === (email || '').toLowerCase());
+      if (!user) return null;
 
-    // Return object with matchPassword method
+      // Return object with matchPassword method
+      return {
+        ...user,
+        matchPassword: async function(enteredPassword) {
+          return await bcrypt.compare(enteredPassword, this.password);
+        }
+      };
+    };
+
     return {
-      ...user,
-      select: function() { return this; }, // handle chain .select('+password')
-      matchPassword: async function(enteredPassword) {
-        return await bcrypt.compare(enteredPassword, this.password);
+      select: function(fields) {
+        return this; // Chainable select method
+      },
+      then: function(resolve, reject) {
+        try {
+          resolve(execute());
+        } catch (err) {
+          reject(err);
+        }
       }
     };
   }
 
-  static async findById(id) {
+  static findById(id) {
     const user = global.mockDb.users.find(u => u._id === id);
-    return user || null;
+    return {
+      then: function(resolve) {
+        resolve(user || null);
+      }
+    };
   }
 
   static async create(data) {
@@ -72,14 +90,18 @@ class MockUser {
     return await userInstance.save();
   }
 
-  static async find(query) {
-    const list = [...global.mockDb.users];
-    return {
-      sort: (sortQuery) => {
+  static find(query) {
+    let list = [...global.mockDb.users];
+    const thenable = {
+      sort: function(sortQuery) {
         list.sort((a, b) => b.createdAt - a.createdAt);
-        return list;
+        return this;
+      },
+      then: function(resolve) {
+        resolve(list);
       }
     };
+    return thenable;
   }
 
   static async countDocuments() {
@@ -105,35 +127,41 @@ class MockPrediction {
     return this;
   }
 
-  async deleteOne() {
-    global.mockDb.predictions = global.mockDb.predictions.filter(p => p._id !== this._id);
-    return { deletedCount: 1 };
-  }
-
   static async create(data) {
     const predInstance = new MockPrediction(data);
     return await predInstance.save();
   }
 
-  static async find(query) {
+  static find(query) {
     const userId = query.userId;
-    const history = global.mockDb.predictions.filter(p => p.userId === userId);
-    return {
-      sort: (sortQuery) => {
+    let history = userId 
+      ? global.mockDb.predictions.filter(p => p.userId === userId)
+      : [...global.mockDb.predictions];
+      
+    const thenable = {
+      sort: function(sortQuery) {
         history.sort((a, b) => b.createdAt - a.createdAt);
-        return history;
+        return this;
+      },
+      then: function(resolve) {
+        resolve(history);
       }
     };
+    return thenable;
   }
 
-  static async findById(id) {
+  static findById(id) {
     const pred = global.mockDb.predictions.find(p => p._id === id);
-    if (!pred) return null;
     return {
-      ...pred,
-      deleteOne: async function() {
-        global.mockDb.predictions = global.mockDb.predictions.filter(p => p._id !== this._id);
-        return { deletedCount: 1 };
+      then: function(resolve) {
+        if (!pred) return resolve(null);
+        resolve({
+          ...pred,
+          deleteOne: async function() {
+            global.mockDb.predictions = global.mockDb.predictions.filter(p => p._id !== id);
+            return { deletedCount: 1 };
+          }
+        });
       }
     };
   }
