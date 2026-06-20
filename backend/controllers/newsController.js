@@ -88,3 +88,81 @@ exports.submitFeedback = async (req, res, next) => {
     next(err);
   }
 };
+
+// @desc    Analyze headline for clickbait and emotional indicators
+// @route   POST /api/news/analyze-headline
+// @access  Private
+exports.analyzeHeadline = async (req, res, next) => {
+  try {
+    const { headline } = req.body;
+
+    if (!headline || headline.trim().length === 0) {
+      return res.status(400).json({ success: false, error: 'Headline is required' });
+    }
+
+    const trimmed = headline.trim();
+    
+    // 1. Capitalization score
+    const words = trimmed.split(/\s+/);
+    const uppercaseWords = words.filter(w => w.length > 1 && w === w.toUpperCase() && /^[A-Z]+$/.test(w));
+    const capRatio = words.length > 0 ? (uppercaseWords.length / words.length) * 100 : 0;
+
+    // 2. Sensational word check
+    const sensationalPhrases = [
+      "won't believe", "wont believe", "shocking", "mind-blowing", "mind blowing", "incredible",
+      "you need to", "you will never", "never believe", "secret", "revealed", "viral", "amazing",
+      "must watch", "obliterates", "destroys", "isolated incident", "omg", "shocked", "epic"
+    ];
+    let matchedPhrases = [];
+    const lowerHeadline = trimmed.toLowerCase();
+    sensationalPhrases.forEach(phrase => {
+      if (lowerHeadline.includes(phrase)) {
+        matchedPhrases.push(phrase);
+      }
+    });
+
+    // 3. Exclamations / Question marks
+    const hasExclamation = trimmed.includes('!');
+    const hasQuestion = trimmed.includes('?');
+
+    // 4. Starts with a number
+    const startsWithNumber = /^\d+/.test(trimmed);
+
+    // Calculate score
+    let clickbaitScore = 0;
+    if (capRatio > 25) clickbaitScore += 30;
+    if (matchedPhrases.length > 0) clickbaitScore += Math.min(matchedPhrases.length * 25, 50);
+    if (hasExclamation) clickbaitScore += 15;
+    if (startsWithNumber) clickbaitScore += 10;
+    if (hasQuestion && matchedPhrases.length > 0) clickbaitScore += 10; // "Is this true?"
+
+    // Cap clickbait score at 100
+    clickbaitScore = Math.min(clickbaitScore, 100);
+
+    // Determine risk rating
+    let risk = 'Low';
+    if (clickbaitScore > 60) {
+      risk = 'High';
+    } else if (clickbaitScore > 30) {
+      risk = 'Medium';
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        headline: trimmed,
+        clickbaitScore,
+        risk,
+        metrics: {
+          capitalizationRatio: Math.round(capRatio),
+          sensationalWordsFound: matchedPhrases,
+          hasExclamation,
+          hasQuestion,
+          startsWithNumber
+        }
+      }
+    });
+  } catch (err) {
+    next(err);
+  }
+};

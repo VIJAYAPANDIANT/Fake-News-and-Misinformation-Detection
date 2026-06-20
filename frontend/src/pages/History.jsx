@@ -63,7 +63,78 @@ const History = () => {
           </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4">
+        <div className="space-y-8">
+          {/* Stats Analytics Dashboard cards */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <span className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                Articles Analyzed
+              </span>
+              <span className="text-3xl font-black text-slate-850 dark:text-white">
+                {history.length}
+              </span>
+            </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <span className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                Verifiable (Real)
+              </span>
+              <span className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                {history.filter(r => r.prediction === 'Real').length}
+              </span>
+            </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <span className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                Deceptive (Fake)
+              </span>
+              <span className="text-3xl font-black text-red-600 dark:text-red-400">
+                {history.filter(r => r.prediction === 'Fake').length}
+              </span>
+            </div>
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 rounded-2xl shadow-sm">
+              <span className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-1">
+                Avg. Confidence
+              </span>
+              <span className="text-3xl font-black text-blue-600 dark:text-blue-400">
+                {Math.round((history.reduce((acc, curr) => acc + curr.confidenceScore, 0) / history.length) * 100)}%
+              </span>
+            </div>
+          </div>
+
+          {/* Visual Distribution Bar Chart */}
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-sm space-y-4">
+            <div className="flex justify-between items-center text-sm font-bold">
+              <span className="text-slate-700 dark:text-slate-350">Content Credibility Breakdown</span>
+              <span className="text-xs text-slate-400 dark:text-slate-500 font-semibold">Distribution Ratio</span>
+            </div>
+
+            {/* Segmented bar */}
+            <div className="flex h-5 rounded-full overflow-hidden w-full bg-slate-100 dark:bg-slate-800">
+              <div 
+                style={{ width: `${Math.round((history.filter(r => r.prediction === 'Real').length / history.length) * 100)}%` }} 
+                className="h-full bg-gradient-to-r from-emerald-500 to-teal-500" 
+              />
+              <div 
+                style={{ width: `${Math.round((history.filter(r => r.prediction === 'Fake').length / history.length) * 100)}%` }} 
+                className="h-full bg-gradient-to-r from-red-500 to-rose-600" 
+              />
+            </div>
+
+            {/* Legends */}
+            <div className="flex items-center space-x-6 text-xs font-bold">
+              <div className="flex items-center space-x-1.5 text-emerald-650 dark:text-emerald-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <span>Verifiable News ({Math.round((history.filter(r => r.prediction === 'Real').length / history.length) * 100)}%)</span>
+              </div>
+              <div className="flex items-center space-x-1.5 text-red-650 dark:text-red-400">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                <span>Deceptive News ({Math.round((history.filter(r => r.prediction === 'Fake').length / history.length) * 100)}%)</span>
+              </div>
+            </div>
+          </div>
+
+          <h3 className="text-lg font-black text-slate-850 dark:text-white pt-4">Detailed Scans List</h3>
+
+          <div className="grid grid-cols-1 gap-4">
           {history.map((record) => {
             const isFake = record.prediction === 'Fake';
             return (
@@ -105,6 +176,7 @@ const History = () => {
               </div>
             );
           })}
+          </div>
         </div>
       )}
     </div>

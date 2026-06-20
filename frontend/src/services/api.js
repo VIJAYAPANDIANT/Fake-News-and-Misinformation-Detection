@@ -24,6 +24,11 @@ export const predictNews = async (title, text) => {
   return response.data;
 };
 
+export const analyzeHeadline = async (headline) => {
+  const response = await API.post('/news/analyze-headline', { headline });
+  return response.data;
+};
+
 export const getHistory = async () => {
   const response = await API.get('/news/history');
   return response.data;
